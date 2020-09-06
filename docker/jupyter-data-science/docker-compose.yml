@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  jupyter_docker:
+    container_name: 'jupyter-data-science'
+    build: '.
+#    image: jupyter-data-science:2020-09
+    ports:
+      - 8888:8888
+    volumes:
+      - $PWD/../../data:/data
+      - $PWD/../../notebooks:/notebooks/local
