@@ -1,0 +1,20 @@
+version: "3"
+services:
+  spark:
+    image: peralozac/sparkmagic_spark:latest
+    hostname: spark
+    ports:
+      - "8998:8998"
+    volumes:
+      - ./data:/home/jovyan/data
+  jupyter:
+    image: jmeidam/jupyter-sparkmagic-livy:latest
+    links:
+      - spark
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./data:/home/jovyan/data
+    user: root
+    environment:
+      - GRANT_SUDO=yes
