@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  jupyter_docker:
+    container_name: 'jupyter_ocr-tesseact-py'
+    build: '.'
+#    image: ocr-tesseact-py:2020-08-26
+    ports:
+      - 8888:8888
+    volumes:
+      - $PWD/../../data:/data
+      - $PWD/../../notebooks:/notebooks/local

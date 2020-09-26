@@ -3,6 +3,11 @@ startjdatascience() {
   echo "Make sure you have ** docker-compose ** installed !!"
   (cd docker/jupyter-data-science-py && exec docker-compose up)
 }
+echo "Type 'startjocr' to start jupyter-ocr-tesseact-py"
+startjocr() {
+  echo "Make sure you have ** docker-compose ** installed !!"
+  (cd docker/jupyter-ocr-tesseact-py && exec docker-compose up)
+}
 echo "Type 'startjspark' to start jupyter-sparkmagic"
 startjspark() {
   echo "Make sure you have ** docker-compose ** installed !!"
