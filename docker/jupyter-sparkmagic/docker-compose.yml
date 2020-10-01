@@ -17,6 +17,6 @@ services:
       - ../../data:/data
       - ../../notebooks:/notebooks
     user: root
-    command: "jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token='' --NotebookApp.password='' --notebook-dir=/notebooks --no-browser"
+    command: "jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
     environment:
       - GRANT_SUDO=yes
