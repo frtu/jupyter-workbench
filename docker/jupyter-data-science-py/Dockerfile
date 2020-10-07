@@ -11,7 +11,7 @@ VOLUME ["/data", "/notebooks/local"]
 # WORKDIR /notebooks
 
 COPY requirements.txt /notebooks/requirements.txt
-RUN pip install -r /notebooks/requirements.txt
+RUN pip install --upgrade pip && pip install -r /notebooks/requirements.txt
 
 # jupyter
 EXPOSE 8888
