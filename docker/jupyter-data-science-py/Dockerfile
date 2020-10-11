@@ -1,5 +1,8 @@
 # https://hub.docker.com/r/continuumio/anaconda3/tags
-FROM continuumio/anaconda3:2020.07
+ARG BASE_CONTAINER=continuumio/anaconda3:2020.07
+FROM $BASE_CONTAINER
+
+USER root
 
 # Creating directories
 RUN mkdir -p /data /notebooks/local
