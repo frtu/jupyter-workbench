@@ -13,3 +13,9 @@ startjspark() {
   echo "Make sure you have ** docker-compose ** installed !!"
   (cd docker/jupyter-sparkmagic && exec docker-compose up)
 }
+echo "Type 'startpyspark' to start jupyter-pyspark"
+startpyspark() {
+  echo "Make sure you have ** docker-compose ** installed !!"
+  (cd docker/jupyter-pyspark && exec docker-compose up)
+}
+
