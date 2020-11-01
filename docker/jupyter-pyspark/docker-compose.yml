@@ -1,13 +1,15 @@
 version: "3"
 services:
   jupyter:
-    image: jupyter/pyspark-notebook
+    build: '.'
+    # image: jupyter/pyspark-notebook
     ports:
-      - "8888:8888"
+      - 9080:80
+      - 8888:8888
     volumes:
       - ../../data:/data
       - ../../notebooks:/notebooks
     user: root
-    command: "jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
+    # command: "jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
     environment:
       - GRANT_SUDO=yes
