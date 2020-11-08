@@ -25,9 +25,10 @@ COPY ./nginx/conf /etc/nginx/
 
 ADD ./nginx/reverse_proxy_start_up.sh /
 RUN chmod +x /reverse_proxy_start_up.sh
+
 # Forward request logs to Docker log collector
-# RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-#   && ln -sf /dev/stderr /var/log/nginx/error.log
+RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+  && ln -sf /dev/stderr /var/log/nginx/error.log
 
 STOPSIGNAL SIGTERM
 
