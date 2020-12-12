@@ -4,7 +4,7 @@ services:
     build: '.'
     # image: jupyter/pyspark-notebook
     ports:
-      - 9080:80
+      - 9999:80
       - 8888:8888
     volumes:
       - ../../data:/data
