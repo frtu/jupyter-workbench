@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  jupyter_llm:
+    container_name: 'jupyter_llm'
+    image: jupyter/pyspark-notebook
+    # build: '.'
+    ports:
+      - 9999:80
+      - 8888:8888
+      - 7860:7860
+    volumes:
+      - ../../data:/data
+      - ../../notebooks:/notebooks
+      - ~/.nomic/:/home/jovyan/.nomic/
+      - ~/nltk_data:/usr/local/share/nltk_data
+      # - ~/miniforge3/envs/jupyter-openai/lib/python3.1/site-packages:/opt/conda/envs/jupyter-openai/lib/python3.10/site-packages
+    command: "/opt/conda/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
+    user: root
+    networks:
+      - network
+    environment:
+      - GRANT_SUDO=yes
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENV=${PINECONE_ENV}
+
+networks:
+  network:
+    driver: bridge
+    # To enable IPv6 uncomment below lines
+#    driver_opts:
+#        com.docker.network.enable_ipv6: "true"
