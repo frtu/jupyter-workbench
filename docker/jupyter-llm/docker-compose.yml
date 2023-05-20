@@ -25,6 +25,62 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - PINECONE_API_KEY=${PINECONE_API_KEY}
       - PINECONE_ENV=${PINECONE_ENV}
+  
+  # FOR EMBEDDINGS
+  # https://hub.docker.com/r/ankane/pgvector/tags
+  # https://github.com/pgvector/pgvector
+  postgres:
+    image: ankane/pgvector:${PGVECTOR_VERSION}
+    #container_name: postgres
+    hostname: database
+    restart: always
+    ports:
+      - ${DB_PORT:-5432}:5432
+    volumes:
+      - $PWD/db/data:/var/lib/postgresql/data
+      - $PWD/db/init:/docker-entrypoint-initdb.d/
+      # - $PWD/db/init_sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    environment:
+      POSTGRES_USER: ${ADMIN_USER:-root}
+      POSTGRES_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      ## During INIT, allows to bootstrap an empty database for all user creation
+      POSTGRES_DB: ${DB_NAME:-postgres}
+      APP_DB_SCHEMA: ${APP_DB_SCHEMA:-public}
+      APP_DB_NAME: ${APP_DB_NAME:-db}
+      APP_DB_USER: ${APP_DB_USER:-admin}
+      APP_DB_PASS: ${APP_PASSWORD:-admin}
+      # https://www.postgresql.org/docs/current/auth-trust.html
+      POSTGRES_HOST_AUTH_METHOD: trust # allow all connections without a password. This is *not* recommended for prod
+      ## To modify the storage location. By default /var/lib/postgresql/data
+      # PGDATA: "/var/lib/postgresql/data"
+    networks:
+      - network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "admin" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:7.1
+    #container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_UI_LOGIN:-admin@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_UI_PASSWORD:-admin}
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: ${ADMIN_UI_REQUIRE_PASSWORD:-False}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - ${DB_UI_PORT:-8008}:80
+    depends_on:
+      - postgres
+    networks:
+      - network
+    # https://githubmemory.com/repo/asaikali/docker-compose-postgres
+    #entrypoint:
+    #  - "/bin/sh"
+    #  - "-c"
+    #  - "/bin/echo 'postgres:5432:*:postgres:password' > /tmp/pgpassfile && chmod 600 /tmp/pgpassfile && /entrypoint.sh"
 
 networks:
   network:
