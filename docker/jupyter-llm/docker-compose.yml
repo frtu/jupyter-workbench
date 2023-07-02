@@ -12,8 +12,10 @@ services:
     volumes:
       - ../../data:/data
       - ../../notebooks:/notebooks
-      - ~/.nomic/:/home/jovyan/.nomic/
-      - ~/nltk_data:/usr/local/share/nltk_data
+      - ~/.cache/:/home/jovyan/.cache/
+      - ~/cache/.nomic/:/home/jovyan/.nomic/
+      - ~/cache/.deepface/:/home/jovyan/.deepface/
+      - ~/cache/nltk_data:/usr/local/share/nltk_data
       # - ~/miniforge3/envs/jupyter-openai/lib/python3.1/site-packages:/opt/conda/envs/jupyter-openai/lib/python3.10/site-packages
     command: "/opt/conda/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
     user: root
