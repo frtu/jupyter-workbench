@@ -3,7 +3,7 @@ version: '3'
 services:
   jupyter_llm:
     container_name: 'jupyter_llm'
-    image: jupyter/pyspark-notebook
+    image: jupyter/pyspark-notebook:python-3.11
     # build: '.'
     ports:
       - 9999:80
