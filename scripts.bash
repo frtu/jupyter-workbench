@@ -1,3 +1,8 @@
+echo "Type 'startsearch' to start jupyter-search"
+startsearch() {
+  echo "Make sure you have ** docker-compose ** installed !!"
+  (cd docker/jupyter-search && exec docker-compose up)
+}
 echo "Type 'startllm' to start jupyter-llm"
 startllm() {
   echo "Make sure you have ** docker-compose ** installed !!"
