@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  jupyter_llm:
+    container_name: 'jupyter_search'
+    image: jupyter/pyspark-notebook:python-3.11
+    # build: '.'
+    ports:
+      - 9999:80
+      - 8888:8888
+      - 7860:7860
+    volumes:
+      - ../../data:/data
+      - ../../notebooks:/notebooks
+      - ~/.cache/:/home/jovyan/.cache/
+      - ~/cache/.nomic/:/home/jovyan/.nomic/
+      - ~/cache/.deepface/:/home/jovyan/.deepface/
+      - ~/cache/nltk_data:/usr/local/share/nltk_data
+      # - ~/miniforge3/envs/jupyter-openai/lib/python3.1/site-packages:/opt/conda/envs/jupyter-openai/lib/python3.10/site-packages
+    command: "/opt/conda/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --notebook-dir=/notebooks --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.iopub_data_rate_limit='1.0e10' --no-browser"
+    user: root
+    networks:
+      - bridge
+    environment:
+      - GRANT_SUDO=yes
+      - HUGGINGFACEHUB_API_TOKEN=${HUGGINGFACEHUB_API_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_ENV=${PINECONE_ENV}
+
+  # FOR EMBEDDINGS
+  elasticsearch:
+    image: ${ELASTICSEARCH_IMAGE}
+    restart: always
+    volumes:
+      - ~/data/elasticsearch:/usr/share/elasticsearch/data
+    expose:
+      - 9200
+    ports:
+      - 9200
+    environment:
+      - node.name=SEARCH
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.license.self_generated.type=trial
+#      - bootstrap.memory_lock=true
+#      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+    healthcheck:
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
+      test: [ "CMD", "curl", "--fail", "http://elasticsearch:9200/_cluster/health" ]
+      interval: 30s
+      timeout: 40s
+      retries: 5
+      start_period: 40s
+    networks:
+      - bridge
+
+  kibana:
+    image: ${KIBANA_IMAGE}
+    restart: always
+    ports:
+      - 5601
+    environment:
+      # https://www.elastic.co/guide/en/kibana/current/docker.html
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - bridge
+
+# https://docs.docker.com/compose/networking/
+networks:
+  bridge:
+    driver: bridge
+    # To enable IPv6 uncomment below lines
+#    driver_opts:
+#        com.docker.network.enable_ipv6: "true"
