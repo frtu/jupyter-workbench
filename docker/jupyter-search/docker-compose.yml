@@ -74,6 +74,15 @@ services:
     networks:
       - bridge
 
+  eland:
+    image: ${ELAND_IMAGE}
+    command: >
+      sh -c "eland_import_hub_model --url http://elasticsearch:9200/ --hub-model-id elastic/distilbert-base-cased-finetuned-conll03-english --task-type ner"
+    depends_on:
+      - elasticsearch
+    networks:
+      - bridge
+
 # https://docs.docker.com/compose/networking/
 networks:
   bridge:
