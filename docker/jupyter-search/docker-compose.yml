@@ -1,4 +1,7 @@
-version: '3'
+# https://www.elastic.co/guide/en/elasticsearch/reference/8.15/docker.html#docker-compose-file
+volumes:
+  esplugins:
+    driver: local
 
 services:
   jupyter_search:
@@ -32,47 +35,74 @@ services:
   # https://github.com/elastic/elasticsearch/blob/main/docs/reference/setup/install/docker/docker-compose.yml
   elasticsearch:
     image: ${ELASTICSEARCH_IMAGE}
-    restart: always
+    # ----------------------------------
+    # UNCOMMENT TO BUILD ES WITH PLUGINS
+    # ----------------------------------
+    # build:
+    #   dockerfile: ./Dockerfile
+    #   context: ./ 
+    restart: unless-stopped
+    hostname: elasticsearch
+    ports:
+      - ${ES_PORT:-9200}:9200
     volumes:
       - ~/data/elasticsearch:/usr/share/elasticsearch/data
-    ports:
-      - ${ES_PORT}:9200
+      # https://elk-docker.readthedocs.io/#installing-elasticsearch-plugins
+      - esplugins:/usr/share/elasticsearch/plugins      
     environment:
-      - node.name=SEARCH
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html
+      # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites
+      - node.name=${ES_NODE_NAME}
       - discovery.type=single-node
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+      - http.port=9200
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - http.cors.allow-headers=X-Requested-With,Content-Type,Content-Length,Authorization
       - xpack.security.enabled=false
       - xpack.security.http.ssl.enabled=false
-      - xpack.license.self_generated.type=trial
-#      - bootstrap.memory_lock=true
-#      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - ELASTIC_USER=${ELASTIC_USER:-}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-}
+      # https://www.elastic.co/guide/en/elasticsearch/reference/8.15/docker.html#_disable_swapping
+      - bootstrap.memory_lock=true
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - bridge
     healthcheck:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html
-      test: [ "CMD", "curl", "--fail", "http://elasticsearch:9200/_cluster/health" ]
-      interval: 30s
+      test: [ "CMD", "curl", "--fail", "-u ${ELASTIC_USER}:${ELASTIC_PASSWORD}", "${ELASTICSEARCH_URL}/_cluster/health" ]
+      interval: 10s
       timeout: 40s
       retries: 5
       start_period: 40s
-    networks:
-      - bridge
 
+  # https://www.elastic.co/guide/en/kibana/current/docker.html
+  # https://www.elastic.co/guide/en/kibana/current/settings.html
   kibana:
     image: ${KIBANA_IMAGE}
-    restart: always
-    volumes:
-      - ~/data/kibana:/usr/share/kibana/data    
-    ports:
-     - ${KIBANA_PORT}:5601
-    environment:
-      # https://www.elastic.co/guide/en/kibana/current/docker.html
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    restart: unless-stopped
     depends_on:
       - elasticsearch
+    ports:
+      - ${KIBANA_PORT:-5601}:5601
+    volumes:
+      - ~/data/kibana:/usr/share/kibana/data    
+    environment:
+      # https://www.elastic.co/guide/en/kibana/current/docker.html
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_URL}
+      # https://www.elastic.co/guide/en/elasticsearch/reference/8.15/configuring-stack-security.html#stack-start-with-security
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USER:-}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD:-}
     networks:
       - bridge
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -s http://localhost:5601 >/dev/null || exit 1']
+      interval: 10s
+      timeout: 30s
+      retries: 3
 
   eland:
     image: ${ELAND_IMAGE}
