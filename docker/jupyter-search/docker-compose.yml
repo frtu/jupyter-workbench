@@ -34,13 +34,13 @@ services:
   # https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html
   # https://github.com/elastic/elasticsearch/blob/main/docs/reference/setup/install/docker/docker-compose.yml
   elasticsearch:
-    image: ${ELASTICSEARCH_IMAGE}
+    # image: ${ELASTICSEARCH_IMAGE}
     # ----------------------------------
     # UNCOMMENT TO BUILD ES WITH PLUGINS
     # ----------------------------------
-    # build:
-    #   dockerfile: ./Dockerfile
-    #   context: ./ 
+    build:
+      dockerfile: ./Dockerfile
+      context: ./ 
     restart: unless-stopped
     hostname: elasticsearch
     ports:
