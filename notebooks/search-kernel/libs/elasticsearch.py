@@ -24,9 +24,15 @@ class ElasticsearchClient:
         """
         return self.es
 
+    def ping(self):
+        """
+        For sanity check.
+        """
+        return self.get_client().ping()
+
     def info(self):
         """
-        Returns the Elasticsearch cluster info. Useful for sanity check.
+        Returns the Elasticsearch cluster info.
         """
         return self.get_client().info()
 
