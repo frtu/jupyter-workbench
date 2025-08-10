@@ -29,8 +29,8 @@ def test_load_and_get_env(setup_files, monkeypatch):
     monkeypatch.chdir(setup_files)
 
     os_util = OsUtil()
-    assert os_util.get_env("NON_EXISTENT_KEY") is None
-    assert os_util.get_env("NON_EXISTENT_KEY", "default_value") == "default_value"
+    assert os_util.get_env(key="NON_EXISTENT_KEY", interactive=False) is None
+    assert os_util.get_env(key="NON_EXISTENT_KEY", default="default_value", interactive=False) == "default_value"
 
 def test_read_yaml(setup_files):
     """

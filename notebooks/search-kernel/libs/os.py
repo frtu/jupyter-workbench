@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from getpass import getpass
 
 import json
 import yaml
@@ -21,7 +22,7 @@ class OsUtil:
         """
         load_dotenv(dotenv_path)
 
-    def get_env(self, key: str, default: any = None):
+    def get_env(self, key: str, default: any = None, interactive: bool = True):
         """
         Retrieves an environment variable.
         
@@ -33,7 +34,10 @@ class OsUtil:
         Returns:
             str: The value of the environment variable.
         """
-        return os.getenv(key, default)
+        response = os.getenv(key, default)
+        if not response and interactive:
+            response = getpass(f"Enter ENV value for {key} :")
+        return response
 
     @staticmethod
     def read_json(file_path: str) -> dict:
