@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "elasticsearch==8.15.1",
+    "openai>=1.99.6",
+    "python-dotenv>=1.1.1",
+    "pyyaml>=6.0.2",
 ]
 
 [dependency-groups]
