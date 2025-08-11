@@ -7,7 +7,7 @@ class ElasticsearchClient:
     More info `here https://www.elastic.co/docs/reference/elasticsearch/clients/python/getting-started`__
     """
 
-    def __init__(self, hosts: str = "http://elasticsearch:9200", max_retries: int = 5, request_timeout: int = 600):
+    def __init__(self, hosts: str = "http://elasticsearch:9200", username:str = "", password:str = "", max_retries: int = 5, request_timeout: int = 600):
         """
         Initializes the Elasticsearch client.
 
@@ -16,7 +16,12 @@ class ElasticsearchClient:
             max_retries (int): Maximum number of retries for a request.
             request_timeout (int): Timeout in seconds for a request.
         """
-        self.es = Elasticsearch(hosts=hosts, request_timeout=request_timeout).options(max_retries=max_retries)
+        if password == "":
+            print(f"Connecting to hosts:{hosts} with request_timeout:{request_timeout} max_retries:{max_retries}")
+            self.es = Elasticsearch(hosts=hosts, request_timeout=request_timeout).options(max_retries=max_retries)
+        else:
+            print(f"Connecting with username:{username} to hosts:{hosts} with request_timeout:{request_timeout} max_retries:{max_retries}")
+            self.es = Elasticsearch(hosts=hosts, basic_auth=(username, password), request_timeout=request_timeout).options(max_retries=max_retries)
 
     def get_client(self):
         """
